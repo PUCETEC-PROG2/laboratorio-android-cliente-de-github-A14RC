@@ -3,6 +3,11 @@
 ## Descripción del Proyecto
 Este proyecto es un ejercicio de laboratorio para estudiantes donde se implementará una aplicación Android que simula un cliente de GitHub. La aplicación se centrará en la implementación de interfaces y layouts, sin integración con la API REST de GitHub en esta fase.
 
+## Datos del Estudiante
+Andrés Ricardo Romero Castillo
+Desarrollo de Software
+
+
 ## Funcionalidades Principales
 
 ### 1. Lista de Repositorios
