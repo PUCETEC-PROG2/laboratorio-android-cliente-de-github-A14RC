@@ -15,7 +15,7 @@ class RepoViewHolder(private val binding: FragmentRepoItemBinding) : RecyclerVie
         binding.repoOwnerImage.setImageResource(R.mipmap.ic_launcher) // Usa una imagen que tengas
         binding.repoName.text = "Repositorio #${position + 1}"
         binding.repoDescription.text = "Esta es la descripción del elemento número ${position + 1} en la lista."
-        binding.repoLang.text = if (position % 2 == 0) "Kotlin" else "Java"
+        binding.repoLanguage.text = if (position % 2 == 0) "Kotlin" else "Java"
     }
 }
 

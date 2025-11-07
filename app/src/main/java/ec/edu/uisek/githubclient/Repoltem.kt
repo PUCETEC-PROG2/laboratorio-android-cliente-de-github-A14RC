@@ -34,7 +34,7 @@ class Repoltem : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_repoitem, container, false)
+        return inflater.inflate(R.layout.fragment_repo_item, container, false)
     }
 
     companion object {
