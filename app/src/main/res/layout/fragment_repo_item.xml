@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Repoltem"
+    tools:context=".RepoItem"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -14,6 +14,7 @@
         android:gravity="center_vertical">
 
         <ImageView
+            android:id="@+id/repoOwnerImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/ic_launcher_foreground" />
@@ -25,7 +26,6 @@
             android:paddingStart="16dp">
 
             <LinearLayout
-                android:id="@+id/repo_owner_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -38,7 +38,7 @@
                     android:padding="4dp" />
 
                 <TextView
-                    id="@+id/repo_name"
+                    android:id="@+id/repo_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Texto de prueba"
@@ -78,7 +78,7 @@
                     android:padding="4dp" />
 
                 <TextView
-                    android:id="@+id/repo_lang"
+                    android:id="@+id/repoLanguage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Texto de prueba"
