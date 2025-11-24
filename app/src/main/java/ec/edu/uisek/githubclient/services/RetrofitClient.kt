@@ -53,7 +53,7 @@ object RetrofitClient {
             .build()
     }
 
-    val gitHubApiService: GitHubApiService by lazy {
+    val githubApiService: GitHubApiService by lazy {
         retrofit.create(GitHubApiService::class.java)
     }
 }
