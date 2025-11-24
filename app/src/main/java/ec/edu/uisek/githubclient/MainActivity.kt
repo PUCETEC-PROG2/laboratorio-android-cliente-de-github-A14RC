@@ -13,14 +13,16 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
     private val reposAdapter = ReposAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         setupRecyclerView()
+
+        // Llamamos a la API al iniciar
         fetchRepositories()
     }
 
@@ -32,30 +34,35 @@ class MainActivity : AppCompatActivity() {
         val apiService = RetrofitClient.gitHubApiService
         val call = apiService.getRepos()
 
+        Toast.makeText(this, "Conectando a GitHub...", Toast.LENGTH_SHORT).show()
+
         call.enqueue(object : Callback<List<Repo>> {
             override fun onResponse(call: Call<List<Repo>>, response: Response<List<Repo>>) {
                 if (response.isSuccessful) {
                     val repos = response.body()
-                    if (repos != null && repos.isNotEmpty()) {
+                    if (!repos.isNullOrEmpty()) {
                         reposAdapter.updateRepositories(repos)
+                        showMessage("¡Éxito! Se cargaron ${repos.size} repositorios.")
                     } else {
-                        showMessage(msg = "Usted no tiene repositorios")
+                        showMessage("Conexión exitosa, pero no tienes repositorios para mostrar.")
                     }
                 } else {
+                    // Manejo detallado de errores
                     val errorMsg = when (response.code()) {
-                        401 -> "No autorizado"
-                        403 -> "Prohibido"
-                        404 -> "No encontrado"
-                        else -> "Error: ${response.code()}"
+                        401 -> "Error 401: Token inválido o expirado. Revisa local.properties."
+                        403 -> "Error 403: Acceso denegado (¿Token sin permisos de repo?)."
+                        404 -> "Error 404: No encontrado."
+                        else -> "Error del servidor: ${response.code()}"
                     }
-                    Log.e("MainActivity", "Error: $errorMsg")
-                    showMessage(msg = "Error: $errorMsg")
+                    Log.e("MainActivity", "Error API: $errorMsg")
+                    showMessage(errorMsg)
                 }
             }
 
             override fun onFailure(call: Call<List<Repo>>, t: Throwable) {
-                showMessage(msg = "Error: Error de Conexión")
-                Log.e("MainActivity", "Error: ${t.message}")
+                val mensaje = "Fallo de conexión: ${t.localizedMessage}"
+                Log.e("MainActivity", mensaje)
+                showMessage(mensaje)
             }
         })
     }
