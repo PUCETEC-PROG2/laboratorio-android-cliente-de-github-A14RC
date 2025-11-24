@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        // Respetamos el GridLayoutManager del XML
+
         binding.repoRecyclerView.adapter = reposAdapter
     }
 

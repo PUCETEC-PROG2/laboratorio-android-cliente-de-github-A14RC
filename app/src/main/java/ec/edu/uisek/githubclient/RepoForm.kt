@@ -15,7 +15,7 @@ class RepoForm : AppCompatActivity() {
 
     private lateinit var binding: ActivityRepoFormBinding
 
-    // Variables para controlar si estamos editando
+    // Variables para controlar si se editará o creará un repositorio
     private var isEditMode = false
     private var currentRepoOwner: String? = null
     private var currentRepoName: String? = null
@@ -33,25 +33,25 @@ class RepoForm : AppCompatActivity() {
     }
 
     private fun checkIntentData() {
-        // Intentamos leer datos que podrían haber sido enviados desde el MainActivity
+        // Intenta leer datos que podrían haber sido enviados desde el MainActivity
         val name = intent.getStringExtra("REPO_NAME")
         val desc = intent.getStringExtra("REPO_DESC")
         val owner = intent.getStringExtra("REPO_OWNER")
 
         if (name != null && owner != null) {
-            // Si llegaron datos, estamos en MODO EDICIÓN!
+            // Si llegan datos, estamos en MODO EDICIÓN!
             isEditMode = true
             currentRepoName = name
             currentRepoOwner = owner
 
-            // Rellenamos los campos
+            // Rellena los campos
             binding.repoNameInput.setText(name)
             binding.repoDescriptionInput.setText(desc)
 
-            // Cambiamos el texto del botón
+            // Cambia el texto del botón
             binding.saveButton.text = "Actualizar Repositorio"
 
-            // REQUISITO DEL LAB: El nombre no debe ser editable
+            // El nombre no debe ser editable
             binding.repoNameInput.isEnabled = false
         }
     }
@@ -105,7 +105,7 @@ class RepoForm : AppCompatActivity() {
 
         val request = RepoRequest(name, desc)
 
-        // Llamamos al método updateRepo que creamos en el Paso 3
+
         RetrofitClient.githubApiService.updateRepo(owner, name, request).enqueue(object : Callback<Repo> {
             override fun onResponse(call: Call<Repo>, response: Response<Repo>) {
                 if (response.isSuccessful) {
