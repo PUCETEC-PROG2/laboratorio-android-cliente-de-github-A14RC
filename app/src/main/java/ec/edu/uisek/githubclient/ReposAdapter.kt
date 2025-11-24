@@ -3,55 +3,41 @@ package ec.edu.uisek.githubclient
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import ec.edu.uisek.githubclient.databinding.FragmentRepoItemBinding
 import ec.edu.uisek.githubclient.models.Repo
 
-// 1. Clase ViewHolder: Contiene las referencias a las vistas de un solo ítem.
-//    Usa la clase de ViewBinding generada para fragment_repo_item.xml.
-class RepoViewHolder(private val binding: FragmentRepoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+// El adaptador ahora recibe funciones para saber qué hacer al editar/borrar
+class ReposAdapter(
+    private val onEditClicked: (Repo) -> Unit,
+    private val onDeleteClicked: (Repo) -> Unit
+) : RecyclerView.Adapter<RepoViewHolder>() {
 
-    // 2. Función para vincular datos a las vistas del ítem.
-    //    Por ahora, usaremos datos de ejemplo.
-    fun bind(repo: Repo) {
-        binding.repoName.text = repo.name
-        binding.repoDescription.text = repo.description ?: "El repositorio no tiene descripción"
-        binding.repoLang.text = repo.language ?: "Lenguaje no especificado"
-        Glide.with(binding.root.context)
-            .load(repo.owner.avatarUrl)
-            .placeholder(R.mipmap.ic_launcher)
-            .error(R.mipmap.ic_launcher)
-            .circleCrop()
-            .into(binding.repoOwnerImage)
+    private var repos: List<Repo> = emptyList()
+
+    fun updateRepositories(newRepos: List<Repo>) {
+        this.repos = newRepos
+        notifyDataSetChanged()
     }
-}
 
-// 3. Clase Adapter: Gestiona la creación y actualización de los ViewHolders.
-class ReposAdapter : RecyclerView.Adapter<RepoViewHolder>() {
-
-    private var repositories: List<Repo> = emptyList()
-    override fun getItemCount(): Int = repositories.size
-
-
-
-    // Se llama para crear un nuevo ViewHolder cuando el RecyclerView lo necesita.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder {
-        // Infla la vista del ítem usando ViewBinding
-        val binding = FragmentRepoItemBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+        val binding = FragmentRepoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return RepoViewHolder(binding)
     }
 
-    // Se llama para vincular los datos a un ViewHolder en una posición específica.
-    override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
-        holder.bind(repositories[position])
-    }
+    override fun getItemCount(): Int = repos.size
 
-    fun updateRepositories(newRepos: List<Repo>) {
-        repositories = newRepos
-        notifyDataSetChanged()
+    override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
+        holder.bind(repos[position], onEditClicked, onDeleteClicked)
+    }
+}
+
+class RepoViewHolder(private val binding: FragmentRepoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(repo: Repo, onEdit: (Repo) -> Unit, onDelete: (Repo) -> Unit) {
+        binding.repoName.text = repo.name
+        binding.repoDescription.text = repo.description ?: "Sin descripción"
+
+        // Configurar los clics de los botones de colores
+        binding.btnEdit.setOnClickListener { onEdit(repo) }
+        binding.btnDelete.setOnClickListener { onDelete(repo) }
     }
 }

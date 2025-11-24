@@ -17,20 +17,33 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Detalles del Repositorio"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal"/>
+
         <EditText
             android:id="@+id/repo_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint="@string/repo_name" />
+            android:hint="Nombre del repositorio"
+            android:minHeight="48dp" />
 
         <EditText
             android:id="@+id/repo_description_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:inputType="textMultiLine"
-            android:lines="5"
-            android:hint="@string/repo_description" />
+            android:lines="3"
+            android:gravity="top|start"
+            android:hint="Descripción del proyecto"
+            android:minHeight="48dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,14 +58,15 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 style="?attr/materialIconButtonOutlinedStyle"
-                android:text="@string/cancel" />
+                android:text="Cancelar" />
 
             <Button
                 android:id="@+id/save_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/save" />
+                android:layout_marginStart="8dp"
+                android:text="Guardar" />
 
         </LinearLayout>
 

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import ec.edu.uisek.githubclient.databinding.ActivityMainBinding
 import ec.edu.uisek.githubclient.models.Repo
@@ -14,73 +15,93 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val reposAdapter = ReposAdapter()
+
+    private val reposAdapter = ReposAdapter(
+        onEditClicked = { repo -> launchEditScreen(repo) },
+        onDeleteClicked = { repo -> confirmDelete(repo) }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.newRepoFab.setOnClickListener {
-            displayNewRepoForm()
-        }
+        setupRecyclerView()
+        setupFab()
     }
 
     override fun onResume() {
         super.onResume()
-        setupRecyclerView()
-        // Llamamos a la API al iniciar
         fetchRepositories()
     }
 
     private fun setupRecyclerView() {
-        binding.repoRecyclerView?.adapter = reposAdapter
+        // Respetamos el GridLayoutManager del XML
+        binding.repoRecyclerView.adapter = reposAdapter
+    }
+
+    private fun setupFab() {
+        binding.newRepoFab.setOnClickListener {
+            val intent = Intent(this, RepoForm::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun launchEditScreen(repo: Repo) {
+        val intent = Intent(this, RepoForm::class.java)
+        intent.putExtra("REPO_NAME", repo.name)
+        intent.putExtra("REPO_DESC", repo.description)
+
+        repo.owner?.let {
+            intent.putExtra("REPO_OWNER", it.login)
+            startActivity(intent)
+        } ?: showMessage("Error: No se encontró el dueño del repositorio")
+    }
+
+    private fun confirmDelete(repo: Repo) {
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar Repositorio")
+            .setMessage("¿Estás seguro de eliminar '${repo.name}'?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                deleteRepository(repo)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun fetchRepositories() {
-        val apiService = RetrofitClient.githubApiService
-        val call = apiService.getRepos()
-
-        Toast.makeText(this, "Conectando a GitHub...", Toast.LENGTH_SHORT).show()
-
-        call.enqueue(object : Callback<List<Repo>> {
+        RetrofitClient.githubApiService.getRepos().enqueue(object : Callback<List<Repo>> {
             override fun onResponse(call: Call<List<Repo>>, response: Response<List<Repo>>) {
                 if (response.isSuccessful) {
-                    val repos = response.body()
-                    if (!repos.isNullOrEmpty()) {
-                        reposAdapter.updateRepositories(repos)
-                        showMessage("¡Éxito! Se cargaron ${repos.size} repositorios.")
-                    } else {
-                        showMessage("Conexión exitosa, pero no tienes repositorios para mostrar.")
-                    }
-                } else {
-                    // Manejo detallado de errores
-                    val errorMsg = when (response.code()) {
-                        401 -> "Error 401: Token inválido o expirado. Revisa local.properties."
-                        403 -> "Error 403: Acceso denegado (¿Token sin permisos de repo?)."
-                        404 -> "Error 404: No encontrado."
-                        else -> "Error del servidor: ${response.code()}"
-                    }
-                    Log.e("MainActivity", "Error API: $errorMsg")
-                    showMessage(errorMsg)
+                    val repos = response.body() ?: emptyList()
+                    reposAdapter.updateRepositories(repos)
                 }
             }
-
             override fun onFailure(call: Call<List<Repo>>, t: Throwable) {
-                val mensaje = "Fallo de conexión: ${t.localizedMessage}"
-                Log.e("MainActivity", mensaje)
-                showMessage(mensaje)
+                Log.e("API", "Fallo al listar: ${t.message}")
+            }
+        })
+    }
+
+    private fun deleteRepository(repo: Repo) {
+        val owner = repo.owner?.login ?: return
+
+        RetrofitClient.githubApiService.deleteRepo(owner, repo.name).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.code() == 204) {
+                    showMessage("Repositorio eliminado")
+                    fetchRepositories()
+                } else {
+                    showMessage("Error al eliminar: ${response.code()}")
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                showMessage("Fallo de conexión")
             }
         })
     }
 
     private fun showMessage(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-    }
-
-    private fun displayNewRepoForm() {
-        Intent(this, RepoForm::class.java).apply {
-            startActivity(this)
-        }
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }

@@ -7,31 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/repo_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/fragment_repo_item"
-        />
-    
+        tools:listitem="@layout/fragment_repo_item" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/new_repo_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:backgroundTint="@color/uisek_blue"
+        android:backgroundTint="@color/uisek_blue"
         android:layout_margin="16dp"
         android:src="@drawable/add_24"
         app:tint="@color/white"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
-
-        />
+        android:contentDescription="Añadir Repositorio" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
